@@ -8,7 +8,7 @@ from utils.datasets.preprocess import load_im_flexible, load_im_tensor
 from networks.patch2pix import Patch2Pix
 
 def init_patch2pix_matcher(args):  
-    net = load_model(args.ckpt, method='patch2pix')
+    net = load_model(args.ckpt, backbone_model_path=args.backbone_model_path, method='patch2pix')
     matcher = lambda imq, imr: estimate_matches(net, imq, imr,
                                                 ksize=args.ksize, 
                                                 io_thres=args.io_thres,
