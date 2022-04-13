@@ -156,9 +156,9 @@ class ResNet(nn.Module):
             x = self.layer4(x)
             feat_list.append(x)
     
-    def load_pretrained_(self, ignore='fc'):
+    def load_pretrained_(self, ignore='fc', model_dir=None):
         print('Initialize ResNet using pretrained model from {}'.format(self.pretrained_url))
-        state_dict = model_zoo.load_url(self.pretrained_url, model_dir='networks')
+        state_dict = model_zoo.load_url(self.pretrained_url, model_dir=model_dir)
         new_state_dict = OrderedDict()
         for k, v in state_dict.items():
             if ignore in k:

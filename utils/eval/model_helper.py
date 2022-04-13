@@ -25,7 +25,7 @@ def init_ncn_matcher(args):
                                                 imsize=args.imsize)
     return matcher
     
-def load_model(ckpt_path, method='patch2pix', lprint=print):    
+def load_model(ckpt_path, backbone_model_path=None, method='patch2pix', lprint=print):
     # Initialize network
     device = torch.device('cuda:{}'.format(0) if torch.cuda.is_available() else 'cpu') 
     ckpt = load_weights(ckpt_path, device)    
@@ -33,6 +33,7 @@ def load_model(ckpt_path, method='patch2pix', lprint=print):
                        device=device,
                        regr_batch=1200,
                        backbone='ResNet34',
+                       backbone_model_path=backbone_model_path,
                        feat_idx=None,
                        weights_dict=None,
                        regressor_config=None,

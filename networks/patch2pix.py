@@ -9,12 +9,13 @@ from networks.utils import select_local_patch_feats, filter_coarse
 from networks.ncn.model import MutualMatching, NeighConsensus  
 from networks.ncn.extract_ncmatches import corr_to_matches
 
-class Patch2Pix(nn.Module):    
+class Patch2Pix(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.device = config.device
         self.backbone = config.backbone
-        self.change_stride = config.change_stride        
+        self.backbone_model_path = config.backbone_model_path
+        self.change_stride = config.change_stride
         self.upsample = 16
         self.feats_downsample = [1, 2, 2, 2, 2]
         feat_dims = [3, 64, 64, 128, 256]  # Resnet34 block feature out dims 
@@ -99,7 +100,7 @@ class Patch2Pix(nn.Module):
         print('Xavier initialize all model parameters')
         self.apply(xavier_init_func_)
         if pretrained:
-            self.extract.load_pretrained_()
+            self.extract.load_pretrained_(model_dir=self.backbone_model_path)
         if weights_dict:
             if len(weights_dict.items()) == len(self.state_dict()):
                 print('Reload all model parameters from weights dict')
