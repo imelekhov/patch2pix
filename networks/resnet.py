@@ -158,7 +158,7 @@ class ResNet(nn.Module):
     
     def load_pretrained_(self, ignore='fc'):
         print('Initialize ResNet using pretrained model from {}'.format(self.pretrained_url))
-        state_dict = model_zoo.load_url(self.pretrained_url)
+        state_dict = model_zoo.load_url(self.pretrained_url, model_dir='.')
         new_state_dict = OrderedDict()
         for k, v in state_dict.items():
             if ignore in k:
