@@ -9,14 +9,13 @@ from networks.utils import select_local_patch_feats, filter_coarse
 from networks.ncn.model import MutualMatching, NeighConsensus  
 from networks.ncn.extract_ncmatches import corr_to_matches
 
+
 class Patch2Pix(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.device = config.device
         self.backbone = config.backbone
         self.backbone_model_path = config.backbone_model_path
-        print(self.backbone_model_path)
-        sys.exit()
         self.change_stride = config.change_stride
         self.upsample = 16
         self.feats_downsample = [1, 2, 2, 2, 2]
