@@ -5,6 +5,7 @@
 *.pth
 data/
 output/
+.idea/
 
 
 # Byte-compiled / optimized / DLL files
