@@ -106,7 +106,7 @@ class ImMatchDatasetMega(data.Dataset):
         im_src = self.load_im(im_src_ref, crop=pair.crop1)
         im_pos = self.load_im(im_pos_ref, crop=pair.crop2)
 
-        # Select a negative image from other scences
+        # Select a negative image from other scenes
         if self.item_type == "triplet":
             other_scenes = list(self.scenes)
             other_scenes.remove(pair.im1.split("/")[0])

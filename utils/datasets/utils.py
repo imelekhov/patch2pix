@@ -3,6 +3,7 @@ import random
 import cv2
 import numpy as np
 import torch
+from torchvision.transforms import transforms
 
 
 class HomographyAugmenter:
@@ -186,3 +187,19 @@ class HomographyAugmenter:
             image, cv_image_to_crop, (target_hw[1], target_hw[0])
         )
         return result
+
+
+def get_imagenet_mean_std():
+    mean, std = [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
+    return mean, std
+
+
+def get_train_data_transforms():
+    mean, std = get_imagenet_mean_std()
+    return transforms.Compose(
+        [
+            transforms.ToPILImage(),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=mean, std=std),
+        ]
+    )

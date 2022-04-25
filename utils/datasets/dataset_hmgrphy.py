@@ -42,6 +42,8 @@ class PhototourismHmgrphyDataset(Dataset):
             if self.split_type == "train"
             else self._create_val_split()
         )
+        print(len(self.fnames))
+        print(self.fnames[:5])
 
     def _create_val_split(self):
         fnames = []
@@ -106,15 +108,20 @@ class PhototourismHmgrphyDataset(Dataset):
         crop1 = crops_data["crop_src"]
         crop2 = crops_data["crop_trg"]
 
+        """
         if self.transforms:
             crop1 = self.transforms(image=crop1)["image"]
             crop2 = self.transforms(image=crop2)["image"]
+        """
+        if self.transforms:
+            crop1 = self.transforms(crop1)
+            crop2 = self.transforms(crop2)
 
         return {
             "img_fname": self.fnames[item],
-            "crop_src": crop1,
-            "crop_trg": crop2,
-            "h_mtx": crops_data["b_hmg_a"],
+            "src_im": crop1,
+            "pos_im": crop2,
+            "F": crops_data["b_hmg_a"],
         }
 
     def __len__(self):

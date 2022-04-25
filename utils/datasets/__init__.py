@@ -1,1 +1,2 @@
+from .dataset_hmgrphy import PhototourismHmgrphyDataset
 from .dataset_megadepth import ImMatchDatasetMega

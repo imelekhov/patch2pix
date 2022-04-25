@@ -1,4 +1,6 @@
 import numpy as np
+import torch
+import torch.nn as nn
 import torch.nn.functional as F
 
 import networks.resnet as resnet
@@ -13,7 +15,6 @@ class Patch2Pix(nn.Module):
         super().__init__()
         self.device = config.device
         self.backbone = config.backbone
-        self.backbone_model_path = config.backbone_model_path
         self.change_stride = config.change_stride
         self.upsample = 16
         self.feats_downsample = [1, 2, 2, 2, 2]
@@ -109,7 +110,7 @@ class Patch2Pix(nn.Module):
         print("Xavier initialize all model parameters")
         self.apply(xavier_init_func_)
         if pretrained:
-            self.extract.load_pretrained_(model_dir=self.backbone_model_path)
+            self.extract.load_pretrained_()
         if weights_dict:
             if len(weights_dict.items()) == len(self.state_dict()):
                 print("Reload all model parameters from weights dict")

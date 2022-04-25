@@ -215,8 +215,8 @@ class NeighConsensus(torch.nn.Module):
             )
             nn_modules.append(nn.ReLU(inplace=True))
         self.conv = nn.Sequential(*nn_modules)
-        if use_cuda:
-            self.conv.cuda()
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.conv = self.conv.to(device)
 
     def forward(self, x):
         if self.symmetric_mode:
