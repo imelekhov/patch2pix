@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.utils.data as data
 
 from networks.patch2pix import Patch2Pix
-from networks.utils import filter_coarse, sampson_dist
+from networks.utils import filter_coarse, hmgrphy_dist, sampson_dist
 from utils.datasets import ImMatchDatasetMega, PhototourismHmgrphyDataset
 from utils.datasets.utils import get_train_data_transforms
 from utils.train.eval_epoch_immatch import eval_immatch_val_sets
@@ -20,7 +20,7 @@ def parse_agrs():
     parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--save_step", type=int, default=1)
     parser.add_argument("--plot_counts", type=int, default=5)
-    parser.add_argument("--batch", type=int, default=8)
+    parser.add_argument("--batch", type=int, default=1)
     parser.add_argument("--regr_batch", type=int, default=1200)
     parser.add_argument("--prefix", type=str, default="")
     parser.add_argument("--out_dir", "-o", type=str, default="output/patch2pix")
@@ -147,9 +147,28 @@ def train_epoch(epoch, net, train_loader, train_vis, args, lprint_):
             regressor=net.regress_fine,
         )
 
-        for i_ in range(len(fine_matches)):
-            print(fine_matches[i_].shape)
-        sys.exit()
+        print(
+            len(Fs),
+            len(coarse_matches),
+            len(mid_matches),
+            len(fine_matches),
+            len(mid_probs),
+            len(fine_probs),
+        )
+        for F, cmat, mmat, fmat, mcls_pred, fcls_pred in zip(
+            Fs, coarse_matches, mid_matches, fine_matches, mid_probs, fine_probs
+        ):
+            cdist = net.geo_dist_fn(cmat, F)
+            sys.exit()
+            mdist = net.geo_dist_fn(mmat, F)
+            fdist = net.geo_dist_fn(fmat, F)
+            print(cdist.shape)
+            print(cdist[:10])
+            print(23 * "*")
+            print(mdist[:10])
+            print(23 * "*")
+            print(fdist[:10])
+            sys.exit()
 
         # Calculate per pair losses
         cls_batch_lss = []
@@ -415,7 +434,7 @@ def main():
             param.requires_grad = False
 
     lprint_(
-        "Params backboone={} ncn={} regress_mid={} regress_fine={}".format(
+        "Params backbone={} ncn={} regress_mid={} regress_fine={}".format(
             count_parameters(net.extract),
             count_parameters(net.ncn),
             count_parameters(net.regress_mid),
@@ -424,7 +443,7 @@ def main():
     )
 
     lprint_("Set geo dist: sampson distance")
-    net.geo_dist_fn = sampson_dist
+    net.geo_dist_fn = hmgrphy_dist  # sampson_dist
 
     # Training and validation
     t0 = time.time()

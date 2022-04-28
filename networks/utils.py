@@ -1,3 +1,4 @@
+import einops
 import numpy as np
 import torch
 
@@ -134,3 +135,29 @@ def sampson_dist(matches, F, eps=1e-8):
     dd = (l2.transpose(1, 0) * p2).sum(dim=1)
     d = dd ** 2 / (eps + l1[0, :] ** 2 + l1[1, :] ** 2 + l2[0, :] ** 2 + l2[1, :] ** 2)
     return d.float()
+
+
+def hmgrphy_dist(matches, H, eps=1e-8):
+    N = matches.shape[0]
+    matches = matches.to(H)
+    ones = torch.ones((N, 1)).to(H)
+    p1 = torch.cat([matches[:, :2], ones], dim=1)
+    p2 = torch.cat([matches[:, 2:4], ones], dim=1)
+
+    p2_prime = torch.einsum("hw,nh->nw", H, p1)
+    p2_prime_z = einops.repeat(p2_prime[:, -1], "n -> n 3")
+
+    p1_prime = torch.einsum("hw,nh->nw", torch.inverse(H), p2)
+    p1_prime_z = einops.repeat(p1_prime[:, -1], "n -> n 3")
+
+    sys.exit()
+    """
+    
+    print(p1.shape)
+    sys.exit()
+    """
+
+    # H*p1, H^(-1)*p2
+    # p2_prime = H.matmul()
+
+    pass
