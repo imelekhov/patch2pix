@@ -137,25 +137,36 @@ def sampson_dist(matches, F, eps=1e-8):
     return d.float()
 
 
-def hmgrphy_dist(matches, H, eps=1e-8):
+def _is_kpt_valid(kpt, crops_sz):
+    return (0 <= kpt[0] <= crops_sz - 1) and (0 <= kpt[1] <= crops_sz - 1)
+
+
+def hmgrphy_dist(matches, H, crops_sz=256):
     N = matches.shape[0]
     matches = matches.to(H)
     ones = torch.ones((N, 1)).to(H)
     p1 = torch.cat([matches[:, :2], ones], dim=1)
     p2 = torch.cat([matches[:, 2:4], ones], dim=1)
 
-    p2_prime = torch.einsum("hw,nh->nw", H, p1)
+    p2_prime = torch.einsum("wh, hn -> wn", H, p1)
     p2_prime_z = einops.repeat(p2_prime[:, -1], "n -> n 3")
+    p2_prime = torch.div(p2_prime, p2_prime_z)
 
     p1_prime = torch.einsum("hw,nh->nw", torch.inverse(H), p2)
     p1_prime_z = einops.repeat(p1_prime[:, -1], "n -> n 3")
+    p1_prime = torch.div(p1_prime, p1_prime_z)
+
+    mask1_prime = torch.BoolTensor([_is_kpt_valid(kpt, crops_sz) for kpt in p1_prime_z])
+    mask2_prime = torch.BoolTensor([_is_kpt_valid(kpt, crops_sz) for kpt in p2_prime_z])
+
+    """
+    p2[mask2_prime], p2_prime_z[mask2_prime]
+    p1[mask1_prime], p1_prime_z[mask1_prime]
+    """
+
+    print(mask2_prime.sum(), mask1_prime.sum())
 
     sys.exit()
-    """
-    
-    print(p1.shape)
-    sys.exit()
-    """
 
     # H*p1, H^(-1)*p2
     # p2_prime = H.matmul()
